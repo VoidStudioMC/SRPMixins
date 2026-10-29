@@ -185,32 +185,32 @@ public abstract class InfestationOverhaul {
         BlockPos blockPosAbove = startPos.up();
         Block blockAboveStartPos = worldIn.getBlockState(blockPosAbove).getBlock();
 
-        IBlockState stain = SRPBlocks.InfestedStain.getDefaultState().withProperty(BlockInfestedStain.STAGE, beckonStage);
-        IBlockState rubble = SRPBlocks.InfestedRubble.getDefaultState().withProperty(BlockInfestedRubble.STAGE, beckonStage);
-
-        BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
-        for (EnumFacing facing : EnumFacing.values()) {
-            blockPos.setPos(startPos).move(facing);
-            IBlockState state = worldIn.getBlockState(blockPos);
-
-            Material material = state.getMaterial();
-            if (material == Material.AIR) continue;
-
-            Block block = state.getBlock();
-            if (block instanceof IMetaName) continue;
-
-            if (block instanceof BlockBase && (material == Material.GROUND || material == Material.ROCK)) {
-                if (block == SRPBlocks.BiomeHeart || block == SRPBlocks.ColonyHeart) continue;
-
-                IBlockState newState = material == Material.ROCK ? rubble : stain;
-                //int storedStage = block.getMetaFromState(state);
-
-                //if (type == THISNEVERHAPPENS && storedStage <= 1) {
-                worldIn.setBlockState(blockPos, newState);
-                worldIn.updateBlockTick(blockPos, newState.getBlock(), 40, 5);
-                //}
-            }
-        }
+//        IBlockState stain = SRPBlocks.InfestedStain.getDefaultState().withProperty(BlockInfestedStain.STAGE, beckonStage);
+//        IBlockState rubble = SRPBlocks.InfestedRubble.getDefaultState().withProperty(BlockInfestedRubble.STAGE, beckonStage);
+//
+//        BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
+//        for (EnumFacing facing : EnumFacing.values()) {
+//            blockPos.setPos(startPos).move(facing);
+//            IBlockState state = worldIn.getBlockState(blockPos);
+//
+//            Material material = state.getMaterial();
+//            if (material == Material.AIR) continue;
+//
+//            Block block = state.getBlock();
+//            if (block instanceof IMetaName) continue;
+//
+//            if (block instanceof BlockBase && (material == Material.GROUND || material == Material.ROCK)) {
+//                if (block == SRPBlocks.BiomeHeart || block == SRPBlocks.ColonyHeart) continue;
+//
+//                IBlockState newState = material == Material.ROCK ? rubble : stain;
+//                //int storedStage = block.getMetaFromState(state);
+//
+//                //if (type == THISNEVERHAPPENS && storedStage <= 1) {
+//                worldIn.setBlockState(blockPos, newState);
+//                worldIn.updateBlockTick(blockPos, newState.getBlock(), 40, 5);
+//                //}
+//            }
+//        }
 
         Block blockAtStartPos = worldIn.getBlockState(startPos).getBlock();
         if (blockAtStartPos == SRPBlocks.InfestedStain) worldIn.setBlockState(startPos, SRPBlocks.optionalDirt.getDefaultState());
