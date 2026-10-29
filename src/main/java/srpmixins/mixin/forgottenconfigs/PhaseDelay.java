@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+// fixed in SRP 1.10.x
 @Mixin(value = SRPSaveData.class, remap = false)
 public abstract class PhaseDelay {
     @Inject(method = "getDelay", at = @At("HEAD"), cancellable = true)

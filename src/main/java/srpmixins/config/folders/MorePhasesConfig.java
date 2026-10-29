@@ -6,7 +6,12 @@ import srpmixins.SRPMixins;
 
 @MixinConfig(name = SRPMixins.MODID)
 public class MorePhasesConfig {
-    @Config.Comment("SRP uses a fixed max phase of 10. Increase or decrease it with this value. If using this for the first time, the SRPMixins config will look awful on first start, fixes itself on restart. Using this will disable the base SRP configs for the values that are listed here.")
+    @Config.Comment({
+            "SRP uses a fixed max phase of 10. Increase or decrease it with this value.",
+            "If using this for the first time, the SRPMixins config will look awful on first start, fixes itself on restart.",
+            "Using this will disable the base SRP configs for the values that are listed here.",
+            "If you want to modify the \"Max Phase\" your best workflow is to enable this first, start the game, close it, then change max phase and only then modify the then filled lists here."
+    })
     @Config.Name("Enable More Phases")
     @Config.RequiresMcRestart
     @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.morephases.json", defaultValue = false)
@@ -21,7 +26,7 @@ public class MorePhasesConfig {
     @Config.Name("Phase Points")
     public int[] phaseKills = {};
 
-    @Config.Comment("Each second the killcount will go up by this amount for each phase (first entry for phase 0)")
+    @Config.Comment("Each second the killcount of each parasite will go up by this amount for each phase (first entry for phase 0)")
     @Config.Name("Phase Killcount Plus")
     public double[] phaseKillCountPlus = {};
 
@@ -29,9 +34,9 @@ public class MorePhasesConfig {
     @Config.Name("Phase Warning Message")
     public String[] phaseWarning = {};
 
-    @Config.Comment("Parasites will not be able to earn points until this time (seconds) has passed after a phase has started (first entry for phase 0)")
+    @Config.Comment("Parasites will not be able to earn points until this time (seconds) has passed after a phase has started, working like a lure cooldown (first entry for phase 0)")
     @Config.Name("Phase Delay")
-    public int[] phaseDelayTicks = {};
+    public int[] cooldownSeconds = {};
 
     @Config.Comment("Number of points gained when skipping the night (first entry for phase 0)")
     @Config.Name("Sleep Penalty")

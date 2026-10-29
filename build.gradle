@@ -4,6 +4,7 @@ plugins {
     id 'net.minecraftforge.gradle' version "${forge_gradle_version}"
     id 'org.spongepowered.mixin' version "${mixin_gradle_version}"
     id 'wtf.gofancy.fancygradle' version "${fancy_gradle_version}"
+    id 'me.modmuss50.mod-publish-plugin' version "${mod_publish_gradle_version}"
 }
 
 version = mod_version
@@ -20,8 +21,9 @@ minecraft {
             args "--username=Nischhelm"
 
             jvmArg "-Dfml.coreMods.load=${mixin_loader_class}"
-            jvmArg "-Dmixin.hotSwap=true"
+//            jvmArg "-Dmixin.hotSwap=true"
             jvmArg "-Dmixin.checks.interfaces=true"
+            jvmArg "-Dmixin.debug.export=true"
 
             workingDirectory project.file('run')
 
@@ -32,10 +34,11 @@ minecraft {
         server {
 
             jvmArg "-Dfml.coreMods.load=${mixin_loader_class}"
-            jvmArg "-Dmixin.hotSwap=true"
+//            jvmArg "-Dmixin.hotSwap=true"
             jvmArg "-Dmixin.checks.interfaces=true"
+            jvmArg "-Dmixin.debug.export=true"
 
-            workingDirectory project.file('run')
+            workingDirectory project.file('runServer')
 
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
@@ -59,7 +62,7 @@ dependencies {
     compileOnly "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
     annotationProcessor "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
 
-    implementation fg.deobf("libs:SRParasites:${srparasites_version}") // Third party distro disabled
+    implementation fg.deobf("curse.maven:scape-and-run-parasites-348025:5370258")
     implementation fg.deobf("curse.maven:fermiumbooter-${fermiumbooter_version}")
 
     compileOnly fg.deobf("curse.maven:lycanitesmobs-${lycanites_version}")
@@ -72,6 +75,7 @@ dependencies {
     compileOnly fg.deobf("curse.maven:in-control-${incontrol_version}")
     compileOnly fg.deobf("curse.maven:antique-atlas-${antiqueatlas_version}")
     compileOnly fg.deobf("curse.maven:the-hordes-${hordes_version}")
+    compileOnly fg.deobf("curse.maven:atlas-lib-${atlaslib_version}")
 
     compileOnly fg.deobf("CraftTweaker2:CraftTweaker2-${crafttweaker_version}")
     compileOnly fg.deobf("CraftTweaker2:ZenScript:${zs_version}")
@@ -89,8 +93,8 @@ dependencies {
     //compileOnly fg.deobf("curse.maven:scape-and-run-parasite-dimension-1037060:5965078")
     //compileOnly fg.deobf("curse.maven:scape-and-run-parasites-meteorite-1124012:6533192")
     //compileOnly fg.deobf("curse.maven:nebula-parasites-1246704:6439940")
-    //compileOnly fg.deobf("libs:SRRevenants:1.12.2v1.0.2")
-    //compileOnly fg.deobf("libs:SRMonstress:1.12.2v1.0.2")
+
+    compileOnly fg.deobf("curse.maven:simple-voice-chat-416089:7613963")
 }
 
 mixin {
@@ -136,27 +140,81 @@ jar {
         attr['FMLCorePlugin']               = mixin_loader_class
         attr['FMLCorePluginContainsFMLMod'] = 'true'
         attr['TweakClass']                  = 'org.spongepowered.asm.launch.MixinTweaker'
-        attr['ForceLoadAsMod'] = "true"
-
-        def currentTasks = gradle.startParameter.taskNames
-        if (currentTasks[0] == 'build' || currentTasks[0] == 'assemble')
-            attr['ForceLoadAsMod'] = "true"
-              attributes(attr)
-    }
-}
-
-tasks.register("copyReobfJar", Copy) {
-    dependsOn("reobfJar")
-
-    from(layout.buildDirectory.file("reobfJar/output.jar"))
-    into(layout.projectDirectory.dir("run/mods"))
-    rename("output.jar", "${mod_name}-${mod_version}.jar")
-}
-
-afterEvaluate {
-    tasks.matching { it.name.startsWith("reobfJar") }.configureEach {
-        finalizedBy("copyReobfJar")
+        attr['ForceLoadAsMod'] = gradle.startParameter.taskNames[0] != 'runClient' && gradle.startParameter.taskNames[0] != 'runServer'
+        attributes(attr)
     }
 }
 
 jar.finalizedBy('reobfJar')
+
+publishMods {
+    file = jar.archiveFile
+    changelog = providers.environmentVariable("CHANGELOG").orElse("See GitHub releases for changelog")
+    version = mod_version
+    type = STABLE
+    modLoaders.add("forge")
+
+    if (project.findProperty("publish_to_github") == "true") {
+        github {
+            accessToken = providers.environmentVariable("GITHUB_TOKEN")
+            repository = providers.environmentVariable("GITHUB_REPOSITORY").orElse("owner/repo")
+            commitish = "main"
+        }
+    }
+
+    if (project.findProperty("curseforge_project_id")) {
+        curseforge {
+            accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+            projectId = project.findProperty("curseforge_project_id")
+            minecraftVersions.add(minecraft_version)
+            modLoaders.add("forge")
+
+            client = true
+            server = true
+
+            requires("fermiumbooter")
+            requires("scape-and-run-parasites")
+            optional("the-lost-cities")
+            optional("bloodmoon")
+            optional("lycanites-mobs")
+            optional("in-control")
+            optional("crafttweaker")
+            optional("scape-and-run-parasites-deep-sea-danger")
+            optional("scape-and-run-parasites-extra")
+            optional("srp-addon-cotesia-glomerata")
+            optional("scape-and-run-parasites-mutant-beasts")
+            optional("scape-and-run-parasites-quark")
+            optional("scape-and-spartan-parasites")
+            optional("parasites-addon-overlast")
+            optional("antique-atlas")
+            optional("simple-voice-chat")
+        }
+    }
+
+    if (project.findProperty("modrinth_project_id")) {
+        modrinth {
+            accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+            projectId = project.findProperty("modrinth_project_id")
+            minecraftVersions.add(minecraft_version)
+            modLoaders.add("forge")
+
+            requires("fermiumbooter")
+            requires("scapeandrunparasites")
+            optional("the-lost-cities")
+            optional("blood-moon")
+            optional("lycanites-mobs")
+            optional("in-control")
+            optional("crafttweaker")
+            optional("scape-and-run-parasites-deep-sea-danger")
+            optional("scape-and-run-parasites-extra")
+            optional("srp-addon-cotesia-glomerata")
+            optional("scape-and-run-parasites-quark")
+            optional("antique-atlas")
+            optional("simple-voice-chat")
+            // not available on modrinth:
+//            optional("scape-and-run-parasites-mutant-beasts")
+//            optional("scape-and-spartan-parasites")
+//            optional("parasites-addon-overlast")
+        }
+    }
+}

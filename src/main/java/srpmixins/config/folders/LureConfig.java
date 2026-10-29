@@ -51,4 +51,22 @@ public class LureConfig {
     @Config.RequiresMcRestart
     @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.lureoverflowfix.json", defaultValue = true)
     public boolean fixCooldownOverflow = true;
+
+    @Config.Comment("If enabled, disallows using lures and carcasses until the current phase at least matches their inherent phase")
+    @Config.Name("Block Lures until respective phase")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.blockluresuntilphase.json", defaultValue = false)
+    public boolean blockLureUntilRespPhase = false;
+
+    @Config.Comment("If enabled, carcasses can maximally decrease the phase by 1. At max they can reduce from some phase at 99% to the phase one lower at 0%, so max the span of two entire phases. Need to use multiple carcasses to decrease by more than one phase.")
+    @Config.Name("Carcasses decrease max one phase")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.luresmaxdecreaseonephase.json", defaultValue = false)
+    public boolean decreaseMaxOnePhase = false;
+
+    @Config.Comment("Carcasses spawn scents with a certain level dependent on their own level. These scents will fall back to lvl 0 once they get updated once. This fixes it.")
+    @Config.Name("Fix Carcass Scent Level")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.carcassscentlvlfix.json", defaultValue = true)
+    public boolean fixCarcassScentLvl = true;
 }

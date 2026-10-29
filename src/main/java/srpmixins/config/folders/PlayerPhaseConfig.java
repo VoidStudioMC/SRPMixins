@@ -22,4 +22,19 @@ public class PlayerPhaseConfig {
             "In an existing world it's enough to enter all dimensions once to have the patch be fully applied and allowing to disable this patch.")
     @Config.Name("Player Phases Legacy Patch")
     public boolean playerPhaseLegacyPatch = true;
+
+    @Config.Comment("Allows to define dimension and targeted player name in all /srpevolution subcommands. Usage: /srpevolution xyz [optional:dimid] [optional:playername]")
+    @Config.Name("Modify srpevolution Command")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.extendedevocommand.json", defaultValue = true)
+    public boolean extendedEvoCommand = true;
+
+    @Config.Comment({
+            "Makes timers like evolution cooldown and min/max phase use the player specific playtime instead of the global worldtime.",
+            "Enabling this will make players on servers stop losing cooldown etc while they are not online."
+    })
+    @Config.Name("Tick cooldowns individually")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.individualtick.json", defaultValue = true)
+    public boolean individualTicks = true;
 }

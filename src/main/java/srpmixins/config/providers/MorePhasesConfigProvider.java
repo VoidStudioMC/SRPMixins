@@ -40,7 +40,7 @@ public class MorePhasesConfigProvider {
         int[] phaseKills = {0, SRPConfigSystems.phaseKillsOne, SRPConfigSystems.phaseKillsTwo, SRPConfigSystems.phaseKillsThree, SRPConfigSystems.phaseKillsFour, SRPConfigSystems.phaseKillsFive, SRPConfigSystems.phaseKillsSix, SRPConfigSystems.phaseKillsSeven, SRPConfigSystems.phaseKillsEight, SRPConfigSystems.phaseKillsNine, SRPConfigSystems.phaseKillsTen};
         double[] phaseKillCountPlus = {0.0F, SRPConfigSystems.phaseKillCountPlusOne, SRPConfigSystems.phaseKillCountPlusTwo, SRPConfigSystems.phaseKillCountPlusThree, SRPConfigSystems.phaseKillCountPlusFour, SRPConfigSystems.phaseKillCountPlusFive, SRPConfigSystems.phaseKillCountPlusSix, SRPConfigSystems.phaseKillCountPlusSeven, SRPConfigSystems.phaseKillCountPlusEight, SRPConfigSystems.phaseKillCountPlusNine, SRPConfigSystems.phaseKillCountPlusTen};
         String[] phaseWarning = {"", SRPConfigSystems.phaseWarningOne, SRPConfigSystems.phaseWarningTwo, SRPConfigSystems.phaseWarningThree, SRPConfigSystems.phaseWarningFour, SRPConfigSystems.phaseWarningFive, SRPConfigSystems.phaseWarningSix, SRPConfigSystems.phaseWarningSeven, SRPConfigSystems.phaseWarningEight, SRPConfigSystems.phaseWarningNine, SRPConfigSystems.phaseWarningTen};
-        int[] phaseDelayTicks = {0, SRPConfigSystems.phaseDelayTicksOne, SRPConfigSystems.phaseDelayTicksTwo, SRPConfigSystems.phaseDelayTicksThree, SRPConfigSystems.phaseDelayTicksFour, SRPConfigSystems.phaseDelayTicksFive, SRPConfigSystems.phaseDelayTicksSix, SRPConfigSystems.phaseDelayTicksSeven, SRPConfigSystems.phaseDelayTicksEight, SRPConfigSystems.phaseDelayTicksNine, SRPConfigSystems.phaseDelayTicksTen};
+        int[] cooldownSeconds = {0, SRPConfigSystems.phaseDelayTicksOne, SRPConfigSystems.phaseDelayTicksTwo, SRPConfigSystems.phaseDelayTicksThree, SRPConfigSystems.phaseDelayTicksFour, SRPConfigSystems.phaseDelayTicksFive, SRPConfigSystems.phaseDelayTicksSix, SRPConfigSystems.phaseDelayTicksSeven, SRPConfigSystems.phaseDelayTicksEight, SRPConfigSystems.phaseDelayTicksNine, SRPConfigSystems.phaseDelayTicksTen};
         int[] sleepPenalty = {SRPConfigSystems.sleepPenaltyZero, SRPConfigSystems.sleepPenaltyOne, SRPConfigSystems.sleepPenaltyTwo, SRPConfigSystems.sleepPenaltyThree, SRPConfigSystems.sleepPenaltyFour, SRPConfigSystems.sleepPenaltyFive, SRPConfigSystems.sleepPenaltySix, SRPConfigSystems.sleepPenaltySeven, SRPConfigSystems.sleepPenaltyEight, SRPConfigSystems.sleepPenaltyNine, SRPConfigSystems.sleepPenaltyTen};
 
         int[] phaseMinParasiteID = {SRPConfigSystems.phaseCancelParasiteIDZero, SRPConfigSystems.phaseCancelParasiteIDOne, SRPConfigSystems.phaseCancelParasiteIDTwo, SRPConfigSystems.phaseCancelParasiteIDThree, SRPConfigSystems.phaseCancelParasiteIDFour, SRPConfigSystems.phaseCancelParasiteIDFive, SRPConfigSystems.phaseCancelParasiteIDSix, SRPConfigSystems.phaseCancelParasiteIDSeven, SRPConfigSystems.phaseCancelParasiteIDEight, SRPConfigSystems.phaseCancelParasiteIDNine, SRPConfigSystems.phaseCancelParasiteIDTen};
@@ -84,7 +84,7 @@ public class MorePhasesConfigProvider {
         SRPMixins.CONFIG.get("general.More Phases", "Phase Points", SRPMixinsConfigHandler.morephases.phaseKills).set(phaseKills);
         SRPMixins.CONFIG.get("general.More Phases", "Phase Killcount Plus", SRPMixinsConfigHandler.morephases.phaseKillCountPlus).set(phaseKillCountPlus);
         SRPMixins.CONFIG.get("general.More Phases", "Phase Warning Message", SRPMixinsConfigHandler.morephases.phaseWarning).set(phaseWarning);
-        SRPMixins.CONFIG.get("general.More Phases", "Phase Delay", SRPMixinsConfigHandler.morephases.phaseDelayTicks).set(phaseDelayTicks);
+        SRPMixins.CONFIG.get("general.More Phases", "Phase Delay", SRPMixinsConfigHandler.morephases.cooldownSeconds).set(cooldownSeconds);
         SRPMixins.CONFIG.get("general.More Phases", "Sleep Penalty", SRPMixinsConfigHandler.morephases.sleepPenalty).set(sleepPenalty);
         SRPMixins.CONFIG.get("general.More Phases", "Spawning - Minimum Parasite Type ID", SRPMixinsConfigHandler.morephases.phaseMinParasiteID).set(phaseMinParasiteID);
         SRPMixins.CONFIG.get("general.More Phases", "Spawning - Maximum Parasite Type ID", SRPMixinsConfigHandler.morephases.phaseMaxParasiteID).set(phaseMaxParasiteID);
@@ -100,7 +100,7 @@ public class MorePhasesConfigProvider {
         SRPMixinsConfigHandler.morephases.phaseKills = phaseKills;
         SRPMixinsConfigHandler.morephases.phaseKillCountPlus = phaseKillCountPlus;
         SRPMixinsConfigHandler.morephases.phaseWarning = phaseWarning;
-        SRPMixinsConfigHandler.morephases.phaseDelayTicks = phaseDelayTicks;
+        SRPMixinsConfigHandler.morephases.cooldownSeconds = cooldownSeconds;
         SRPMixinsConfigHandler.morephases.sleepPenalty = sleepPenalty;
         SRPMixinsConfigHandler.morephases.phaseMinParasiteID = phaseMinParasiteID;
         SRPMixinsConfigHandler.morephases.phaseMaxParasiteID = phaseMaxParasiteID;
@@ -116,7 +116,7 @@ public class MorePhasesConfigProvider {
         SRPMixins.CONFIG.save();
     }
 
-    private static String getPhaseListsContainingEntryAsString(String spawnEntry, List<List<String>> phaseSpawnListOriginal) {
+    public static String getPhaseListsContainingEntryAsString(String spawnEntry, List<List<String>> phaseSpawnListOriginal) {
         List<Integer> phases = new ArrayList<>();
         String phasesToSpawnIn = "";
         for(int i = 0; i <= phaseSpawnListOriginal.size(); i++) {
@@ -134,5 +134,36 @@ public class MorePhasesConfigProvider {
             }
         }
         return phasesToSpawnIn.substring(0, phasesToSpawnIn.length()-2); //remove last ", "
+    }
+
+    public static List<Byte> parsePhaseList(String phasePart) {
+        //Pattern: [0 - 2; 4; 10; ...]
+        String phasesToSpawnIn = phasePart.trim().replace("[","").replace("]","");
+        String[] split = phasesToSpawnIn.split(",");
+        List<Byte> spawnPhases = new ArrayList<>();
+
+        try {
+            for (String s : split) {
+                //Pattern: min - max
+                if (s.contains("-")) {
+                    String[] split2 = s.split("-");
+                    if (split2.length < 2) {
+                        SRPMixins.LOGGER.warn("SRPMixins unable to parse Phase part of a Spawn List entry, expected minPhase - maxPhase, provided was: {}", s);
+                        continue;
+                    }
+                    byte minPhase = Byte.parseByte(split2[0].trim());
+                    byte maxPhase = Byte.parseByte(split2[1].trim());
+                    for (byte i = minPhase; i <= maxPhase; i++)
+                        spawnPhases.add(i);
+                    //Pattern: specificPhase
+                } else
+                    spawnPhases.add(Byte.parseByte(s.trim()));
+            }
+        } catch (Exception e) {
+            SRPMixins.LOGGER.warn("SRPMixins unable to parse Phase part of a Spawn List entry, expected pattern [0 - 2; 4; 10; ...]. Provided was: {}", phasePart);
+            e.printStackTrace(System.out);
+        }
+
+        return spawnPhases;
     }
 }

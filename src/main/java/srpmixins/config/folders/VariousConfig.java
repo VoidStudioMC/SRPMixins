@@ -51,7 +51,8 @@ public class VariousConfig {
     @Config.Comment("Parasites regularly break blocks. Use this list to blacklist some blocks for certain parasites or parasite groups.\n" +
             "Special group names: PRIMITIVE, ADAPTED, PURE, PREEMINENT, ANCIENT, NEXUS, DETERRENT, ASSIMILATED, FERAL, INBORN, HIJACKED, CRUDE\n" +
             "For specific parasites use their ingame mobid so for example ada_longarms\n" +
-            "Expected pattern: modid:blockname, list of parasite mobids and parasite groups separated by comma")
+            "Expected pattern: modid:blockname, list of parasite mobids and parasite groups separated by comma\n" +
+            "Use modid:blockname:metadata for it to only target blocks with specific metadata (0-15)")
     @Config.Name("Block Break Blacklist")
     public String[] blockBreakBlacklist = {};
 
@@ -138,13 +139,28 @@ public class VariousConfig {
     @MixinConfig.MixinToggle(
             earlyMixin = "mixins.srpmixins.vanilla.lootpoolparser.json",
             lateMixin = "mixins.srpmixins.srp.loottables.json",
-            defaultValue = true
+            defaultValue = false
     )
-    public boolean useLootTables = true;
+    public boolean useLootTables = false;
 
     @Config.Comment("Restores the behavior where rupters in low phases will not just ignore players but actively avoid them just like they avoid other mobs.")
     @Config.Name("Rupters Avoid Players")
     @Config.RequiresMcRestart
     @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.ruptersavoidplayers.json", defaultValue = true)
     public boolean ruptersAvoidPlayers = true;
+
+    @Config.Comment({
+            "Bit hard to explain but basically when Gnats die after 1 minute they call some serverside methods on the clientside which can lead to crashes on multiplayer servers.",
+            "This fixes it by just calling the relevant code on the serverside."
+    })
+    @Config.Name("Fix Gnat Client Crash")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.gnatclientfix.json", defaultValue = true)
+    public boolean gnatClientFix = true;
+
+    @Config.Comment("Plays randomly overlayered different pitches of the phase sound (and occasionally some others) which according to this features author Iqury sounds more scary.")
+    @Config.Name("Alt Phase Sounds")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.altphasesounds.json", defaultValue = false)
+    public boolean altPhaseSounds = false;
 }

@@ -63,6 +63,31 @@ public class ModCompatConfig {
     @Config.RequiresMcRestart
     public boolean overlastHUDnoPoints = false;
 
+    @Config.Comment("Fixes the OpenGL State before rendering the OverLast evolution bar so it doesn't take on the color of the gui that was rendered before it.")
+    @Config.Name("OverLast HUD GL State Fix")
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.overlast.glstatefix.json", defaultValue = false)
+    @MixinConfig.CompatHandling(
+            modid = "overlast",
+            desired = true,
+            reason = "Mod Compat for OverLast, requires OverLast",
+            warnIngame = false
+    )
+    @Config.RequiresMcRestart
+    public boolean overlastGLFix = true;
+
+    @Config.Comment("Shows changes of the evolution points as rising and fading numbers (+1, +5, -100) above the phase number of the OverLast evolution bar.\n" +
+            "Needs to be enabled on the server as well.")
+    @Config.Name("OverLast HUD Point Changes")
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.overlast.pointchanges.json", defaultValue = true)
+    @MixinConfig.CompatHandling(
+            modid = "overlast",
+            desired = true,
+            reason = "Mod Compat for OverLast, requires OverLast",
+            warnIngame = false
+    )
+    @Config.RequiresMcRestart
+    public boolean overlastHUDPointChanges = true;
+
     @Config.Comment("Set to true to make \"Scape and Spartan: Parasites\" weapons with the Uncapped property ignore parasite damage caps.\n" +
             "NOTE: This property works without SRPMixins as well, this just streamlines the handling a bit. \n" +
             "I kinda thought it didn't work - without actually testing it...")
@@ -117,4 +142,45 @@ public class ModCompatConfig {
     @Config.RequiresMcRestart
     public boolean enableHordesCompat = true;
 
+    @Config.Comment({
+            "The issue here is Aqua Remains using a clientside field crashing them.",
+            "This is caught but makes them not spawn, and spams the server log",
+            "For SRPExtra 0.6.x, will probably crash in other versions"
+    })
+    @Config.Name("SRPExtra Compat - Fix serverside damageAni issues")
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srpextra_damageanifix.json", defaultValue = false)
+    @MixinConfig.CompatHandling(
+            modid = "srpextra",
+            desired = true,
+            reason = "Mod Compat for SRPExtra, requires SRPExtra",
+            warnIngame = false
+            //, targetVersionRange = "[0.6.2]"
+    )
+    @Config.RequiresMcRestart
+    public boolean enableSRPExtraFixes = false;
+
+    @Config.Comment("Registers a Simple Voice Chat Plugin that makes parasites hear players.")
+    @Config.Name("Simple Voice Chat Compat")
+    @Config.RequiresMcRestart
+    public boolean enableVoiceChatCompat = true;
+
+    @Config.Comment("If Sound Volume (in db) is higher than this, parasites will hear players")
+    @Config.Name("Simple Voice Chat Compat - Volume Threshold")
+    @Config.RangeDouble(min = -100, max = 0)
+    @Config.SlidingOption
+    public double voiceChatThreshold = -10.;
+
+    @Config.Comment("Parasites farther away than this distance (in blocks) will never hear players")
+    @Config.Name("Simple Voice Chat Compat - Max Distance")
+    @Config.RequiresMcRestart
+    @Config.RangeInt(min = 1, max = 100)
+    @Config.SlidingOption
+    public int voiceChatMaxDistance = 50;
+
+    @Config.Comment({
+            "If enabled, will write a status message \"They can hear you\" when parasites hear the player through Simple Voice Chat. ",
+            "WIP, i kinda want this to be less intrusive"
+    })
+    @Config.Name("Simple Voice Chat Compat - Notify Player")
+    public boolean voiceChatNotify = true;
 }

@@ -18,7 +18,8 @@ public class SRPMixinsPlugin implements IFMLLoadingPlugin {
 
 		//Temporary
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.scentperformance.json"); //TODO: overhaul scents and make toggles
-		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.oe.json", () -> Loader.isModLoaded("oe"));
+
+		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.weaponatkspeed.json");
 
 		//Blacklists with no toggle
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.biomespawnblacklist.json"); //Empty whitelist doesn't really make sense here but we still won't use EarlyConfigReader for toggle mixin
@@ -49,6 +50,10 @@ public class SRPMixinsPlugin implements IFMLLoadingPlugin {
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.simmermancap.json", () -> EarlyConfigReader.getInt("End Simmermen Conversion Cap", SRPMixinsConfigHandler.simmermen.endSimmermenCap) > -1);
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.spawninglight.json", () -> EarlyConfigReader.getInt("Min Blocklight Threshold", SRPMixinsConfigHandler.spawns.blockLightThresholdTwo) != 7);
 
+		//Double disables
+		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.infsquidreach.json", () -> EarlyConfigReader.getDouble("Assimilated Squid Attack Range", SRPMixinsConfigHandler.waterparas.infSquidAttackRange) >= 0);
+		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.fosternerf.json", () -> EarlyConfigReader.getDouble("Foster Chance", SRPMixinsConfigHandler.potions.fosterChance) >= 0);
+
 		//Mod Compat
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.overlast.json", () -> Loader.isModLoaded("overlast"));
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.overlast_customphases.json", () -> OverLastCompat.shouldEnqueueOverLastMixins(OverLastCompat.OverLastVersion.FULL));
@@ -65,6 +70,7 @@ public class SRPMixinsPlugin implements IFMLLoadingPlugin {
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.infestationpenalty.json", () -> !isInfestationOverhaulEnabled() && EarlyConfigReader.getInt("Infestation Penalty First Phase", SRPMixinsConfigHandler.phasepoints.infestationPenaltyPhase) > -1);
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.beckoninfestationlimit.json", () -> !isInfestationOverhaulEnabled() && EarlyConfigReader.getBoolean("Fix Block Infestation Limit", SRPMixinsConfigHandler.deterrents.fixInfestedBlockLimit));
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.circularinfestationarea.json", () -> !isInfestationOverhaulEnabled() && EarlyConfigReader.getBoolean("Circular Infestation Area", SRPMixinsConfigHandler.deterrents.infestationAreaIsCircular));
+		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.srp.stopinfestedbeckondespawn.json", () -> !isInfestationOverhaulEnabled() && EarlyConfigReader.getBoolean("Stop Infested Block Beckon Despawn", SRPMixinsConfigHandler.deterrents.stopRemainBeckonDespawn));
 		FermiumRegistryAPI.enqueueMixin(true, "mixins.srpmixins.customphasesnoinfestationoverhaul.json", () -> !isInfestationOverhaulEnabled() && areCustomPhasesEnabled());
 
 		//Incompat with my own shit - biome spread overhaul

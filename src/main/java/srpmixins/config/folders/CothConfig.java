@@ -1,5 +1,6 @@
 package srpmixins.config.folders;
 
+import com.dhanantry.scapeandrunparasites.util.config.SRPConfigMobs;
 import fermiumbooter.annotations.MixinConfig;
 import net.minecraftforge.common.config.Config;
 import srpmixins.SRPMixins;
@@ -40,6 +41,10 @@ public class CothConfig {
     @Config.Name("Sim Big Spider Min Assimilations")
     public int assimBigSpiderMinAssimilations = 1;
 
+    @Config.Comment("SRP has the min assimilation value for sim adventurer use the sim human value. This overwrites it. Requires \"Fix Sim Adventurer Points\"")
+    @Config.Name("Sim Adventurer Min Assimilations")
+    public int assimPlayerMinAssimilations = 5; // = SRPConfigMobs.infhumanCanSpawnAssimilatedNat
+
     @Config.Comment("Feral Bears couldn't get created from assimilated ones upgrading or from gnats. This fixes it.")
     @Config.Name("Fix Feral Bear Creation")
     @Config.RequiresMcRestart
@@ -79,4 +84,18 @@ public class CothConfig {
     @Config.RequiresMcRestart
     @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.simturntoferalfix.json", defaultValue = true)
     public boolean fixSimTurnToFeral = true;
+
+    @Config.Comment("Assimilated mobs only spawn naturally once enough of them have been created through assimilation. \n" +
+            "Assimilated Adventurers are created by players dying with COTH. \n" +
+            "However, this doesn't increase the number of total assimilations for Assimilated Adventurers, leading to them being unable to spawn naturally if their config min assimilation value is not 0.")
+    @Config.Name("Fix Sim Adventurer Points")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.assimplayerfix.json", defaultValue = true)
+    public boolean fixSimPlayerCount = true;
+
+    @Config.Comment("Makes bosses not be affected by COTH removing drops")
+    @Config.Name("Boss loot ignores COTH")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.cothbossdrops.json", defaultValue = true)
+    public boolean fixCOTHBossDrops = true;
 }

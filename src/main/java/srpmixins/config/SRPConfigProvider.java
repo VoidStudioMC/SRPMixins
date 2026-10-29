@@ -16,7 +16,7 @@ public class SRPConfigProvider {
     private static List<Integer> phaseCooldowns = null;
     public static int getPhaseCooldown(byte phase){
         if(SRPMixinsConfigHandler.morephases.enableMorePhases)
-            return phase >= 0 && phase <= getMaxPhase() ? SRPMixinsConfigHandler.morephases.phaseDelayTicks[phase] : 0;
+            return phase >= 0 && phase <= getMaxPhase() ? SRPMixinsConfigHandler.morephases.cooldownSeconds[phase] : 0;
 
         if(phaseCooldowns == null){
             phaseCooldowns = Arrays.asList(
@@ -85,6 +85,24 @@ public class SRPConfigProvider {
             );
 
         return reinforcementChancePerPhase.get(MathHelper.clamp(phase, 0, 10));
+    }
+
+    public static int getScentPoints(int scentLvl){
+        if(SRPMixinsConfigHandler.morescents.enableMoreScents)
+            return SRPMixinsConfigHandler.morescents.pointsRequired[scentLvl];
+        else {
+            switch (scentLvl) {
+                case 1: return SRPConfigSystems.scentLevelPointsOne;
+                case 2: return SRPConfigSystems.scentLevelPointsTwo;
+                case 3: return SRPConfigSystems.scentLevelPointsThree;
+                case 4: return SRPConfigSystems.scentLevelPointsFour;
+                case 5: return SRPConfigSystems.scentLevelPointsFive;
+                case 6: return SRPConfigSystems.scentLevelPointsSix;
+                case 7: return SRPConfigSystems.scentLevelPointsSeven;
+                case 8: return SRPConfigSystems.scentLevelPointsEight;
+                default: return 0;
+            }
+        }
     }
 
     public static List<Integer> dimensionCanGainPointsBlacklist;

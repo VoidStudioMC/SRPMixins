@@ -18,7 +18,7 @@ public class ParaBiomeConfig {
 
     @Config.Comment("SRParasites.cfg has two options for para biome spreading speed (cooldown+block limit), but those don't get applied. Set to true to fix that")
     @Config.Name("Fix Parasitic Biome spreading limit")
-    public boolean fixBiomeSpreadingLimit = true;
+    public boolean fixBiomeSpreadingLimit = false;
 
     @Config.Comment("SRP keeps a single fog density value for all players at the same time. " +
             "In Multiplayer this leads to desyncs with no fog appearing inside the biome, or fog appearing outside of the biome. " +
@@ -27,6 +27,12 @@ public class ParaBiomeConfig {
     @Config.RequiresMcRestart
     @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.fogmultiplayerfix.json", defaultValue = true)
     public boolean fixBiomeFog = true;
+
+    @Config.Comment("Smooths client fog color and density updates and prevents unrelated world loads from clearing rendered fog.") //by landon and claude i don't understand shit about this but it works well enough now
+    @Config.Name("Smooth Parasitic Biome Fog")
+    @Config.RequiresMcRestart
+    @MixinConfig.MixinToggle(lateMixin = "mixins.srpmixins.srp.smoothfog.json", defaultValue = true)
+    public boolean smoothBiomeFog = true;
 
     @Config.Comment("Parasite Bush and Vines will force load chunks when a parasite biome is growing. This stops the force loading. Moved from RLMixins (thanks fonny!)")
     @Config.Name("Fix Parasite Bush Generation Lag")

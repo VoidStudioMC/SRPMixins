@@ -41,6 +41,40 @@ public class CapabilityAdaptationHandler {
         CapabilityManager.INSTANCE.register(ICapabilityAdaptation.class, new Storage(), CapabilityAdaptation::new);
     }
 
+    private static final String SYNC_KEY = "AdaptationCap";
+
+    /**
+     * Returns a copy of the given tag with the adaptation capability attached, or the tag itself if the stack has none
+     */
+    @Nullable
+    public static NBTTagCompound writeSyncTag(ItemStack stack, @Nullable NBTTagCompound tag) {
+        if(!(stack.getItem() instanceof WeaponToolArmorBase) || stack.getMaxStackSize() != 1) return tag;
+        ICapabilityAdaptation cap = stack.getCapability(CAP_ADAPTATION, null);
+        if(cap == null) return tag;
+        NBTBase capNBT = CAP_ADAPTATION.writeNBT(cap, null);
+        if(capNBT == null) return tag;
+
+        NBTTagCompound syncTag = tag == null ? new NBTTagCompound() : tag.copy();
+        syncTag.setTag(SYNC_KEY, capNBT);
+        return syncTag;
+    }
+
+    /**
+     * Reads the adaptation capability from the given tag and strips it, returns null if nothing else is left in the tag
+     */
+    @Nullable
+    public static NBTTagCompound readSyncTag(ItemStack stack, @Nullable NBTTagCompound tag) {
+        if(tag == null || !(stack.getItem() instanceof WeaponToolArmorBase) || stack.getMaxStackSize() != 1) return tag;
+        NBTBase capNBT = tag.getTag(SYNC_KEY);
+        if(!(capNBT instanceof NBTTagCompound)) return tag;
+        ICapabilityAdaptation cap = stack.getCapability(CAP_ADAPTATION, null);
+        if(cap == null) return tag;
+
+        CAP_ADAPTATION.readNBT(cap, null, capNBT);
+        tag.removeTag(SYNC_KEY);
+        return tag.isEmpty() ? null : tag;
+    }
+
     public static class EventHandler {
         @SubscribeEvent
         public static void onAttachCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
@@ -99,10 +133,17 @@ public class CapabilityAdaptationHandler {
             DamageSource source = event.getSource();
             Entity immediateSource = source.getImmediateSource();
 
-            if (SRPMixinsConfigProvider.fireMultiDmgTypes.contains(source.damageType) ||
-                    SRPMixinsConfigProvider.fireMultiDmgTypes.contains("isBurning") && player.isBurning()) {
-                event.setAmount(amount * SRPConfig.firemultyplier);
-                return; //no adaptation in this case
+            boolean isFireDamage = SRPMixinsConfigProvider.fireMultiDmgTypes.contains(source.damageType) ||
+                    SRPMixinsConfigProvider.fireMultiDmgTypes.contains("isBurning") && player.isBurning();
+
+            if (isFireDamage) {
+                amount *= (float) SRPMixinsConfigHandler.adaptation.fireDamageMultiplier;
+
+                // default SRP behavior
+                if (SRPMixinsConfigHandler.adaptation.burningAdaptationEffectiveness <= 0.0) {
+                    event.setAmount(amount);
+                    return;
+                }
             }
 
             float reductionAmount = 0.0F;
@@ -130,16 +171,25 @@ public class CapabilityAdaptationHandler {
                 if (adaCap == null) continue;
 
                 boolean hasAdaptation = adaCap.hasAdaptation(damageTypeName);
-                //Try to add it if it doesn't exist yet
-                if (!hasAdaptation) hasAdaptation = adaCap.tryAddAdaptation(damageTypeName, player.getRNG(), blackListType);
 
-                if (hasAdaptation) {
-                    //Try to increase the adaptation
-                    adaCap.tryIncreaseAdaptation(damageTypeName, player.getRNG());
-                    //Get the reduction
-                    reductionAmount += adaCap.getReduction(damageTypeName);
+                if (!isFireDamage) {
+                    //Try to add it if it doesn't exist yet
+                    if (!hasAdaptation) hasAdaptation = adaCap.tryAddAdaptation(damageTypeName, player.getRNG(), blackListType);
+
+                    if (hasAdaptation) {
+                        //Try to increase the adaptation
+                        adaCap.tryIncreaseAdaptation(damageTypeName, player.getRNG());
+                    }
                 }
+
+                // Use existing adaptations (possibly with reduced effectiveness when burning)
+                if (hasAdaptation)
+                    reductionAmount += adaCap.getReduction(damageTypeName);
             }
+
+            // Apply reduction effectiveness multiplier when burning
+            if (isFireDamage && SRPMixinsConfigHandler.adaptation.burningAdaptationEffectiveness < 1.0)
+                reductionAmount *= (float) SRPMixinsConfigHandler.adaptation.burningAdaptationEffectiveness;
 
             event.setAmount(Math.max(amount * (1 - reductionAmount), 0.0F));
 
